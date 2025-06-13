@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Internship Applications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f9fafb;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 16px;
+      color: #212529;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 3rem auto;
+      background: #ffffff;
+      padding: 2rem;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #343a40;
+    }
+
+    .application-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .application-item:hover {
+      background-color: #f1f3f5;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-header strong {
+      font-size: 1rem;
+    }
+
+    .app-details {
+      margin-top: 0.75rem;
+      display: none;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .application-item.active .app-details {
+      display: block;
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .badge-success {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .badge-danger {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .badge-secondary {
+      background-color: #6c757d;
+      color: #fff;
+    }
+
+    .actions a {
+      margin-left: 0.5rem;
+    }
+
+    .search-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      .search-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    #searchInput {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Internship Applications</h1>
+
+  <div class="search-group">
+    <a class="btn btn-primary" th:href="@{/applications/new}">
+      <i class="bi bi-plus-circle"></i> Add New
+    </a>
+    <input type="text" class="form-control" id="searchInput" placeholder="Search company or position...">
+  </div>
+
+  <div th:if="${#lists.isEmpty(applications)}" class="text-center text-muted mt-4">
+    No applications found.
+  </div>
+
+  <div th:each="app : ${applications}" class="application-item" onclick="toggleDetails(this)">
+    <div class="app-header">
+      <strong th:text="${app.companyName} + ' — ' + ${app.position}"></strong>
+      <div class="actions">
+        <a class="btn btn-sm btn-outline-secondary" th:href="@{'/applications/edit/' + ${app.id}}" title="Edit">
+          <i class="bi bi-pencil"></i>
+        </a>
+        <a class="btn btn-sm btn-outline-danger" th:href="@{'/applications/delete/' + ${app.id}}"
+           onclick="return confirm('Are you sure you want to delete this application?')" title="Delete">
+          <i class="bi bi-trash"></i>
+        </a>
+      </div>
+    </div>
+    <div class="app-details">
+      <div>
+        <strong>Status:</strong>
+        <span class="badge badge-status"
+              th:classappend="${app.status == 'Accepted'} ? 'badge-success' : (${app.status == 'Rejected'} ? 'badge-danger' : 'badge-secondary')"
+              th:text="${app.status}">Status</span>
+      </div>
+      <div>
+        <strong>Applied Date:</strong> <span th:text="${app.appliedDate}">Date</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleDetails(el) {
+    el.classList.toggle('active');
+  }
+
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    const items = document.querySelectorAll('.application-item');
+    items.forEach(item => {
+      const header = item.querySelector('.app-header strong');
+      const text = header ? header.textContent.toLowerCase() : '';
+      item.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>
