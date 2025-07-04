@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Internship Application Tracker</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --text: #1d1d1f;
+            --card: white;
+            --border: #eaeaea;
+            --button: black;
+            --button-text: white;
+        }
+
+        body.dark-mode {
+            --bg: #1d1d1f;
+            --text: #f5f5f7;
+            --card: #2c2c2e;
+            --border: #3a3a3c;
+            --button: #f5f5f7;
+            --button-text: #1d1d1f;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            text-align: left;
+            background-color: var(--bg);
+        }
+
+        form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        input, select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            font-size: 1rem;
+            flex: 1 1 200px;
+            background-color: #fafafa;
+        }
+
+        button {
+            background: var(--button);
+            color: var(--button-text);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .delete-btn {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .dark-toggle {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-switch {
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-toggle">
+        <label class="toggle-switch">
+            <input type="checkbox" id="theme-toggle"> Dark Mode
+        </label>
+    </div>
+
+    <!-- Title -->
+    <h1>Internship Application Tracker</h1>
+
+    <!-- Table of Applications -->
+    <table>
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="app : ${applications}">
+            <td th:text="${app.studentName}">Student</td>
+            <td th:text="${app.company}">Company</td>
+            <td th:text="${app.role}">Role</td>
+            <td th:text="${app.status}">Status</td>
+            <td>
+                <form th:action="@{'/delete/' + ${app.id}}" method="post">
+                    <button type="submit" class="delete-btn">×</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Add Application Form -->
+    <h2 style="margin-bottom: 1rem;">Add New Application</h2>
+    <form th:action="@{/add}" method="post" th:object="${newApplication}">
+        <input type="text" th:field="*{studentName}" placeholder="Student Name" required>
+        <input type="text" th:field="*{company}" placeholder="Company" required>
+        <input type="text" th:field="*{role}" placeholder="Role" required>
+        <select th:field="*{status}">
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+        </select>
+        <button type="submit">Add</button>
+    </form>
+
+</div>
+
+<!-- JavaScript to toggle dark mode -->
+<script>
+    const toggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Load saved theme
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+        body.classList.add('dark-mode');
+        toggle.checked = true;
+    }
+
+    // Save theme when toggled
+    toggle.addEventListener('change', () => {
+        const isDark = toggle.checked;
+        if (isDark) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+</script>
+</body>
+</html>
